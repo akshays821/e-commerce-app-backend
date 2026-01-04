@@ -1,11 +1,11 @@
 import Admin from "../models/admin.js";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt"
 
 export const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Basic validation
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -13,6 +13,7 @@ export const adminLogin = async (req, res) => {
       });
     }
 
+    // Find admin by email
     const admin = await Admin.findOne({ email });
 
     if (!admin) {
@@ -21,15 +22,10 @@ export const adminLogin = async (req, res) => {
         message: "Invalid credentials",
       });
     }
-console.log("Entered:", JSON.stringify(password));
-console.log("ENTERED PASSWORD:", password);
-console.log("HASH IN DB:", admin.password);
-const isMatch = await bcrypt.compare(password, admin.password);
 
+    // Compare password (uses model method)
+    const isMatch = await admin.matchPassword(password);
 
-// const isMatch = await admin.matchPassword(password);
-console.log("IS MATCH:", isMatch);
-    
     if (!isMatch) {
       return res.status(401).json({
         success: false,
@@ -37,7 +33,6 @@ console.log("IS MATCH:", isMatch);
       });
     }
 
-    // generate JWT
     const token = jwt.sign(
       {
         id: admin._id,
@@ -47,12 +42,14 @@ console.log("IS MATCH:", isMatch);
       { expiresIn: "1d" }
     );
 
-    res.json({
+    return res.json({
       success: true,
       token,
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Admin login error:", error.message);
+
+    return res.status(500).json({
       success: false,
       message: "Server error",
     });

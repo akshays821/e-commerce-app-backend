@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs";
 
 const adminSchema = new mongoose.Schema(
   {
@@ -20,14 +20,15 @@ const adminSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Hash password before saving
-// adminSchema.pre("save", async function (next) {
-//   if (!this.isModified("password")) return next();
-//   this.password = await bcrypt.hash(this.password, 10);
-//   next();
-// });
+// Hash password before saving (only if changed)
+adminSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
 
-// Compare password
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
+// Compare password during login
 adminSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
