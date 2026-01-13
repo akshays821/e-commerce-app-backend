@@ -3,7 +3,11 @@ import Product from "../models/product.js";
 export const createProduct = async (req, res) => {
   try {
     let imageUrl = null;
-    console.log("req.file::",req.file);
+    console.log("--- Create Product Request ---");
+    console.log("Body:", req.body);
+    console.log("File:", req.file);
+    console.log("----------------------------");
+
     if (req.file) {
       imageUrl = req.file.path;
     }
@@ -32,7 +36,11 @@ export const getProduct = async (req, res) => {
 };
 
 export const updateProduct = async (req, res) => {
-  const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  let updateData = req.body;
+  if (req.file) {
+    updateData.image = req.file.path;
+  }
+  const updated = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });
   res.json(updated);
 };
 

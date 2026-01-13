@@ -136,7 +136,8 @@ Help users politely and ask follow-up questions when needed.
       reply
     });
 
-  } catch {
+  } catch (error) {
+    console.error(error);
     return res.status(500).json({
       success: false,
       message: "Server error"
