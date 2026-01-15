@@ -1,11 +1,13 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import connectDB  from "./config/db.js";
+import connectDB from "./config/db.js";
+
 import productRoutes from "./routes/productRoutes.js";
-import chatbotRoutes from "./routes/chatbotRoutes.js"
-import searchAIRoutes from "./routes/searchAIRoutes.js"
+import chatbotRoutes from "./routes/chatbotRoutes.js";
+import searchAIRoutes from "./routes/searchAIRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -15,34 +17,36 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
-connectDB()
+connectDB();
 
-// Routes
 app.use("/api/products", productRoutes);
 app.use("/api/chatbot", chatbotRoutes);
-app.use("/api/search-ai",searchAIRoutes)
+app.use("/api/search-ai", searchAIRoutes);
 app.use("/api/admin", adminRoutes);
-
-
+app.use("/api/users", userRoutes);
 
 // Default route
 app.get("/", (req, res) => {
   res.send("Ecommerce API is running...");
 });
 
+// error handler
 app.use((err, req, res, next) => {
+  console.error(err.stack);
+
   if (err instanceof Error && err.message.includes("Only")) {
-    return res.status(400).json({ success: false, message: err.message });
+    return res.status(400).json({ message: err.message });
   }
 
   if (err.code === "LIMIT_FILE_SIZE") {
     return res.status(400).json({
-      success: false,
-      message: "File is too large. Maximum size is 8MB"
+      message: "File is too large. Maximum size is 8MB",
     });
   }
 
-  next(err);
+  res.status(500).json({
+    message: err.message || "Internal Server Error",
+  });
 });
 
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));
