@@ -1,9 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import connectDB from "./config/db.js";
 
 import productRoutes from "./routes/productRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 import chatbotRoutes from "./routes/chatbotRoutes.js";
 import searchAIRoutes from "./routes/searchAIRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
@@ -11,15 +14,18 @@ import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 const app = express();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 connectDB();
 
 app.use("/api/products", productRoutes);
+app.use("/api/categories", categoryRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/search-ai", searchAIRoutes);
 app.use("/api/admin", adminRoutes);

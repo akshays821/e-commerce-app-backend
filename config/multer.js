@@ -1,28 +1,27 @@
+import express from "express";
 import multer from "multer";
+import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import cloudinary from "./cloudinary.js";
+import dotenv from "dotenv";
 
+dotenv.config();
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Configure Storage
 const storage = new CloudinaryStorage({
-  cloudinary,
+  cloudinary: cloudinary,
   params: {
-    folder: "ecommerce-products",
-    allowed_formats: ["jpg", "jpeg", "png", "webp"]
-  }
+    folder: "ecommerce_products", // The folder in Cloudinary
+    allowed_formats: ["jpg", "png", "jpeg", "webp" ,"avif"],
+  },
 });
 
-// Allowed MIME types
-const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-
-// Multer instance
-const upload = multer({
-  storage,
-  limits: { fileSize: 8 * 1024 * 1024 }, // 8MB max
-  fileFilter: (req, file, cb) => {
-    if (!allowedTypes.includes(file.mimetype)) {
-      return cb(new Error("Only JPG, PNG, and WEBP images are allowed"));
-    }
-    cb(null, true);
-  }
-});
+const upload = multer({ storage });
 
 export default upload;

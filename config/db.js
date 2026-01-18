@@ -3,11 +3,9 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const MONGO_URI = process.env.MONGO_URI;
-
 const connectDB = async () => {
     try {
-        const conn = await mongoose.connect(MONGO_URI, { dbName: 'ecommerce' });
+        const conn = await mongoose.connect(process.env.MONGO_URI, { dbName: 'ecommerce' });
         console.log(`MongoDB Connected: ${conn.connection.host}`);
         console.log("Connected DB:", mongoose.connection.name);
 

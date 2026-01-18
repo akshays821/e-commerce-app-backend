@@ -9,7 +9,9 @@ export const createProduct = async (req, res) => {
     console.log("----------------------------");
 
     if (req.file) {
-      imageUrl = req.file.path;
+      imageUrl = req.file.path; // Cloudinary URL
+    } else {
+      return res.status(400).json({ message: "Image is required" });
     }
     
     
