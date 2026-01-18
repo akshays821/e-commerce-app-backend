@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    isBanned: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

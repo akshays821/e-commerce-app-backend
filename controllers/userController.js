@@ -49,6 +49,10 @@ export const loginUser = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
+    if (user.isBanned) {
+      return res.status(403).json({ message: "Access denied. Your account has been banned." });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
