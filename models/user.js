@@ -24,6 +24,11 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true, // Allows null/undefined values to exist (for non-Google users)
+    },
   },
   { timestamps: true }
 );

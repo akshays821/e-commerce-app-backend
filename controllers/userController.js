@@ -1,6 +1,7 @@
-import User from "../models/user.js";
+import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+// Google Auth removed to separate controller
 
 export const registerUser = async (req, res) => {
   try {
