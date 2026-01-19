@@ -25,6 +25,10 @@ export const googleAuth = async (req, res) => {
     // 4. Check if user already exists in our database
     let user = await User.findOne({ email });
 
+    if (user && user.isBanned) {
+      return res.status(403).json({ message: "Access denied. Your account has been banned." });
+    }
+
     if (!user) {
       // 5. If user doesn't exist, create a new one
       user = await User.create({

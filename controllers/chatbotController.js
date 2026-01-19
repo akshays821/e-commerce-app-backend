@@ -137,7 +137,15 @@ Help users politely and ask follow-up questions when needed.
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("Chatbot Error:", error);
+
+    if (error.status === 503) {
+      return res.status(503).json({
+        success: false,
+        message: "The AI service is currently overloaded. Please try again later."
+      });
+    }
+
     return res.status(500).json({
       success: false,
       message: "Server error"

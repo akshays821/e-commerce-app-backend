@@ -51,6 +51,10 @@ export const protectUser = async (req, res, next) => {
       return res.status(401).json({ message: "Not authorized" });
     }
 
+    if (user.isBanned) {
+      return res.status(403).json({ message: "Access denied. Your account has been banned." });
+    }
+
     req.user = user;
     next();
   } catch (error) {

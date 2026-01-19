@@ -11,6 +11,7 @@ import chatbotRoutes from "./routes/chatbotRoutes.js";
 import searchAIRoutes from "./routes/searchAIRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import singleProductRoutes from "./routes/singleProductRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -25,6 +26,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 connectDB();
 
 app.use("/api/products", productRoutes);
+app.use("/api/products", singleProductRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/search-ai", searchAIRoutes);

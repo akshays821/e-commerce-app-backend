@@ -34,6 +34,7 @@ export const searchAI = async (req, res) => {
           { title: regex },
           { description: regex },
           { category: regex },
+          { tags: regex },
         ],
       });
 
@@ -113,7 +114,8 @@ User Query: ${message}
         query.$or.push(
           { title: regex },
           { description: regex },
-          { category: regex }
+          { category: regex },
+          { tags: regex }
         );
       });
     }

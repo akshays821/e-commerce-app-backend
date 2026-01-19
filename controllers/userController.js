@@ -76,3 +76,7 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getProfile = async (req, res) => {
+  res.json(req.user);
+};
