@@ -3,6 +3,11 @@ import Product from "../models/product.js";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+
+
+let chatHistory = [];
+
+
 export const chatbotResponse = async (req, res) => {
   try {
     const { message } = req.body;
@@ -63,6 +68,8 @@ Output:
   "price": { "min": 3500, "max": 5500 }
 }
 
+
+
 User Query: ${message}
       `;
 
@@ -117,9 +124,19 @@ User Query: ${message}
     }
 
     // Normal chat
+    
+    // . Format the history into a string to send to the AI
+    // map over the array to create "User: ..." and "AI: ..." lines
+    const historyContext = chatHistory
+      .map((entry) => `${entry.role}: ${entry.content}`)
+      .join("\n");
+
     const systemPrompt = `
 You are an AI assistant for an e-commerce store.
 Help users politely and ask follow-up questions when needed.
+
+PREVIOUS CONVERSATION HISTORY:
+${historyContext}
     `;
 
     const finalPrompt = systemPrompt + "\nUser: " + message;
@@ -130,6 +147,15 @@ Help users politely and ask follow-up questions when needed.
 
     const result = await model.generateContent(finalPrompt);
     const reply = result.response.text();
+
+    // 2. Save the new interaction to the memory variable
+    chatHistory.push({ role: "User", content: message });
+    chatHistory.push({ role: "AI", content: reply });
+
+    // Limit history to the last 6 messages
+    if (chatHistory.length > 6) {
+      chatHistory = chatHistory.slice(-6);
+    }
 
     return res.json({
       type: "chat",

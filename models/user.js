@@ -29,6 +29,12 @@ const userSchema = new mongoose.Schema(
       unique: true,
       sparse: true, // Allows null/undefined values to exist (for non-Google users)
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: String,
+    verificationTokenExpire: Date,
   },
   { timestamps: true }
 );

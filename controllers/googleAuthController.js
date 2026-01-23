@@ -2,6 +2,8 @@ import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library"; // Import Google library
 
+import sendEmail from "../utils/sendEmail.js";
+
 // Initialize Google Client
 // Make sure to add GOOGLE_CLIENT_ID in your .env file
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -36,7 +38,30 @@ export const googleAuth = async (req, res) => {
         email: email,
         password: "google-" + googleId, // Dummy password for Google users
         googleId: googleId,
+        isVerified: true // Google users are already verified
       });
+
+      // Send Welcome Email
+      const welcomeMessage = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #4CAF50;">Welcome to E-Commerce!</h2>
+          <p>Hi ${user.name},</p>
+          <p>You have successfully signed up using Google. We are thrilled to have you on board!</p>
+          <p>Start shopping now and discover amazing deals.</p>
+          <a href="${process.env.FRONTEND_URL}" style="display: inline-block; background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0;">Go to Store</a>
+        </div>
+      `;
+
+      try {
+        await sendEmail({
+          email: user.email,
+          subject: "Welcome to E-Commerce!",
+          message: welcomeMessage,
+        });
+      } catch (emailError) {
+        console.error("Failed to send Google welcome email:", emailError.message);
+        // We continue execution even if email fails, so the user can still log in
+      }
     }
 
     // 6. Generate our own JWT token for the user
