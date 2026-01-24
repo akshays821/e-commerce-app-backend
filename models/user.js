@@ -34,7 +34,12 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
     verificationToken: String,
+    verificationToken: String,
     verificationTokenExpire: Date,
+    address: {
+      type: Object,
+      default: null, // Stores { street, city, zip, country, phone }
+    },
   },
   { timestamps: true }
 );
