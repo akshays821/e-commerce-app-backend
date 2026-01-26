@@ -49,7 +49,7 @@ export const searchAI = async (req, res) => {
     // ai search
 
     const prompt = `
-Extract search keywords and price filters from the user query.
+Extract search keywords (convert to singular root form, e.g. "shoes" -> "shoe") and price filters. Correct spelling errors.
 
 Return ONLY valid JSON in this format:
 
@@ -66,14 +66,14 @@ Examples:
 Input: "shoes under 5000"
 Output:
 {
-  "keywords": ["shoes"],
+  "keywords": ["shoe"],
   "price": { "min": null, "max": 5000 }
 }
 
-Input: "cheap headphones"
+Input: "cheap hedfones"
 Output:
 {
-  "keywords": ["headphones"],
+  "keywords": ["headphone"],
   "price": { "min": null, "max": null }
 }
 

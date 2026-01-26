@@ -1,4 +1,5 @@
 import Order from "../models/Order.js";
+import User from "../models/user.js";
 import crypto from "crypto";
 import axios from "axios";
 
@@ -16,6 +17,11 @@ export const createOrder = async (req, res) => {
 
     if (!req.user) {
         return res.status(401).json({ message: "User authentication failed" });
+    }
+
+    // Update User Address for future convenience
+    if (shippingAddress) {
+        await User.findByIdAndUpdate(req.user._id, { address: shippingAddress });
     }
 
     if (!orderItems || orderItems.length === 0) {
