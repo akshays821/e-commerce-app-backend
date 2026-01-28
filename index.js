@@ -21,11 +21,30 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const PORT = process.env.PORT || 4000;
 
-app.use(cors());
-app.use(express.json());
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+const allowedOrigins = [
+  process.env.FRONTEND_URL, 
+  "https://ecommerce-frontend-pi-plum.vercel.app", 
+  "http://localhost:5173"
+].filter(origin => origin);
 
-connectDB();
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
+}));
+app.use(express.json());
+
+// Safe DB Connection
+try {
+    connectDB();
+} catch (error) {
+    console.error("Failed to initiate DB connection:", error);
+}
 
 app.use("/api/products", productRoutes);
 app.use("/api/products", singleProductRoutes);
@@ -45,20 +64,13 @@ app.get("/", (req, res) => {
 // error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-
-  if (err instanceof Error && err.message.includes("Only")) {
-    return res.status(400).json({ message: err.message });
-  }
-
-  if (err.code === "LIMIT_FILE_SIZE") {
-    return res.status(400).json({
-      message: "File is too large. Maximum size is 8MB",
-    });
-  }
-
   res.status(500).json({
     message: err.message || "Internal Server Error",
   });
 });
 
-app.listen(PORT, () => console.log(`Server running on ${PORT}`));
+export default app;
+
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => console.log(`Server running on ${PORT}`));
+}

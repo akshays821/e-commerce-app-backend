@@ -1,4 +1,4 @@
-import User from "../models/User.js";
+import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library"; // Import Google library
 
