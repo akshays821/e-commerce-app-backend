@@ -39,12 +39,16 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Safe DB Connection
-try {
-    connectDB();
-} catch (error) {
-    console.error("Failed to initiate DB connection:", error);
-}
+// Database connection middleware for Serverless
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error("Database connection failed:", error);
+    res.status(500).json({ message: "Database connection failed", error: error.message });
+  }
+});
 
 app.use("/api/products", productRoutes);
 app.use("/api/products", singleProductRoutes);
